@@ -1,29 +1,29 @@
-import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-export default function SplashScreen() {
+import React, { useState } from 'react';
+import { RefreshControl, SafeAreaView, ScrollView, StyleSheet } from 'react-native';
+
+export default function LoginScreen() {
   const router = useRouter();
-  useEffect(() => {
-    const timer = setTimeout(() => {
-       router.replace('/login');
-    }, 2500);
-    return () => clearTimeout(timer);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Lets you test and view splash transitions directly via swipe down actions
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+      router.replace('/splash'); // Re-triggers splash layout check
+    }, 1500);
   }, []);
+
   return (
-    <View style={styles.splashContainer}>
-      <View style={styles.logoCircle}>
-        <Text style={styles.logoIcon}>🚌</Text>
-      </View>
-      <Text style={styles.splashTitle}>Speedo Transit</Text>
-      <Text style={styles.splashSubtitle}>Smart Lahore Commute</Text>
-      <ActivityIndicator color="#A3D9C9" size="small" style={{ marginTop: 40 }} />
-    </View>
+    <SafeAreaView style={styles.authContainer}>
+      <ScrollView 
+        contentContainerStyle={{ flexGrow: 1 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#046A38']} />}
+      >
+        {/* Your Form Layout elements remain here */}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-const styles = StyleSheet.create({
-  splashContainer: { flex: 1, backgroundColor: '#046A38', alignItems: 'center', justifyContent: 'center' },
-  logoCircle: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center', marginBottom: 20 },
-  logoIcon: { fontSize: 50 },
-  splashTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFFFFF', letterSpacing: 0.5 },
-  splashSubtitle: { fontSize: 16, color: '#A3D9C9', marginTop: 5 },
-});
+const styles = StyleSheet.create({ authContainer: { flex: 1, backgroundColor: '#FFFFFF' } });

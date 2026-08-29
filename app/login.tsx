@@ -3,6 +3,25 @@ import React, { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 const BACKEND_URL = 'http://192.168.0.103'; 
 export default function LoginScreen() {
+  const validateCredentials = (emailOrPhone: string, codeStr: string) => {
+  // Regex pattern matching standard institutional structure configurations
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isPhone = /^\+?[0-9]{10,14}$/.test(emailOrPhone);
+  
+  if (!emailOrPhone) {
+    alert("Identifier input field cannot remain unpopulated.");
+    return false;
+  }
+  if (!emailRegex.test(emailOrPhone) && !isPhone) {
+    alert("Please input a valid phone configuration sequence or institutional Email parameter.");
+    return false;
+  }
+  if (codeStr.length < 8) {
+    alert("Security access password parameters must consist of at least 8 alphanumeric characters.");
+    return false;
+  }
+  return true;
+};
   const router = useRouter();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
@@ -30,12 +49,15 @@ export default function LoginScreen() {
         }),
       });
       const result = await response.json();
-          if (response.ok) {
+              if (response.ok) {
         alert("Login successful!");
-        router.replace('/(tabs)'); // Navigate to the main dashboard after successful login
+        
+    router.replace('/login');
+
       } else {
         alert(result.message || "Invalid database authentication credentials.");
       }
+
 
     } catch (error) {
       console.error("Network connection failure: ", error);
@@ -95,6 +117,19 @@ export default function LoginScreen() {
                 <Text style={styles.buttonText}>Log In</Text>
               )}
             </TouchableOpacity>
+              <TouchableOpacity 
+                style={styles.googleButton} 
+                onPress={() => alert("Forwarding user token identity directly downstream onto secure /api/v1/auth/google validation stacks.")}
+              >
+                <View style={styles.googleIconContainer}>
+              
+                  <View style={[styles.quadrant, { backgroundColor: '#EA4335', top: 0, left: 4 }]} />
+                  <View style={[styles.quadrant, { backgroundColor: '#4285F4', top: 4, right: 0 }]} />
+                  <View style={[styles.quadrant, { backgroundColor: '#FBBC05', bottom: 4, left: 0 }]} />
+                  <View style={[styles.quadrant, { backgroundColor: '#34A853', bottom: 0, left: 4 }]} />
+                </View>
+                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              </TouchableOpacity>
 
             <View style={styles.switchAuthRow}>
               <Text style={styles.switchLabel}>New to Speedo Transit? </Text>
@@ -125,4 +160,10 @@ const styles = StyleSheet.create({
   switchAuthRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 24, paddingBottom: 20 },
   switchLabel: { fontSize: 15, color: '#666666' },
   switchAnchor: { fontSize: 15, fontWeight: 'bold', color: '#046A38' },
+
+  googleButton: { height: 50, borderWidth: 1.5, borderColor: '#EBEBEB', borderRadius: 12,
+  flexDirection: 'row', alignItems: 'center', justifyContent: 'center', backgroundColor: '#FFFFFF', marginTop: 14, gap: 12 },
+  googleButtonText: { color: '#212121', fontSize: 16, fontWeight: '600' },
+  googleIconContainer: { width: 18, height: 18, position: 'relative', overflow: 'hidden' },
+  quadrant: { position: 'absolute', width: 10, height: 10, borderRadius: 2 }
 });
