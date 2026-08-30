@@ -2,17 +2,16 @@ import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-
-export default function SearchResultsScreen() {
+export default function SearchResults() {
   const router = useRouter();
-
-  const handleSelectRoute = (routeName: string) => {
-    // Navigates directly downstream into the live tracking dashboard layout map views
+  
+    const handleSelectRoute = (routeName: string) => {
     router.push({
-      pathname: '/route-details',
+      pathname: '/route-details' as any,
       params: { selectedBus: routeName }
     });
   };
+
 
   return (
     <SafeAreaView style={styles.container}>

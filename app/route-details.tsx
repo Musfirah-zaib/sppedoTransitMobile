@@ -1,24 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView, TouchableOpacity, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-
-export default function SearchResultsScreen() {
+import { useRouter, useLocalSearchParams } from 'expo-router'; 
+export default function RouteDetails() {
   const router = useRouter();
-
   const handleSelectRoute = (routeName: string) => {
-    // Navigates directly downstream into the live tracking dashboard layout map views
     router.push({
-      pathname: '/route-details',
+      pathname: './app/route-details',
       params: { selectedBus: routeName }
     });
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      {/* Modern Back Nav Header Node */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.headerIcon} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#1A202C" />
@@ -31,10 +25,7 @@ export default function SearchResultsScreen() {
           <Ionicons name="navigate-circle-outline" size={26} color="#046A38" />
         </TouchableOpacity>
       </View>
-
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        
-        {/* Count Segment Header Bar */}
         <View style={styles.resultsCountBar}>
           <Text style={styles.countText}>3 Routes Found</Text>
           <TouchableOpacity style={styles.filterBadge}>
@@ -42,14 +33,11 @@ export default function SearchResultsScreen() {
             <Text style={styles.filterText}>Filter</Text>
           </TouchableOpacity>
         </View>
-
-        {/* 🟢 CARD 1: Fastest Recommended Route Option (Route 14) */}
         <View style={styles.routeOptionCard}>
           {/* Micro Ribbon Badge for Sorting */}
           <View style={styles.ribbonBadge}>
             <Text style={styles.ribbonText}>Fastest</Text>
           </View>
-
           <View style={styles.cardHeaderRow}>
             <View style={styles.timeMeta}>
               <Text style={styles.durationText}>45 <Text style={styles.miniLabelText}>mins</Text></Text>
@@ -57,30 +45,22 @@ export default function SearchResultsScreen() {
             </View>
             <Text style={styles.farePriceText}>PKR 25</Text>
           </View>
-
-          {/* Timeline Node Chain Layout */}
           <View style={styles.timelineVisualBlock}>
             <View style={styles.nodeItem}>
               <Ionicons name="walk" size={16} color="#718096" />
               <Text style={styles.nodeSubLabel}>5m</Text>
             </View>
-            
             <View style={styles.horizontalLineDivider} />
-            
             <View style={styles.busNodeBadge}>
               <Ionicons name="bus" size={14} color="#FFFFFF" style={{ marginRight: 4 }} />
               <Text style={styles.busNodeText}>Route 14</Text>
             </View>
-
             <View style={styles.horizontalLineDivider} />
-
             <View style={styles.nodeItem}>
               <Ionicons name="walk" size={16} color="#718096" />
               <Text style={styles.nodeSubLabel}>10m</Text>
             </View>
           </View>
-
-          {/* Selection Trigger Button Layout */}
           <View style={styles.buttonFooterRow}>
             <View style={styles.iconIndicatorGroup}>
               <Ionicons name="people-outline" size={16} color="#718096" style={{ marginRight: 8 }} />
@@ -168,5 +148,5 @@ const styles = StyleSheet.create({
   selectButtonText: { color: '#FFFFFF', fontSize: 13, fontWeight: '700' }
 
 
-  
+
 });

@@ -80,11 +80,9 @@ export default function LoginScreen() {
             <TouchableOpacity 
               style={styles.guestButton} 
               onPress={() => router.replace('/(tabs)/dashboard')}
-              activeOpacity={0.7}
-            >
+              activeOpacity={0.7}>
               <Text style={styles.guestButtonText}>Continue as Guest</Text>
             </TouchableOpacity>
-
             <View style={styles.switchAuthRow}>
               <Text style={styles.switchLabel}>New to Speedo Transit? </Text>
               <TouchableOpacity onPress={() => router.push('/signup')}>

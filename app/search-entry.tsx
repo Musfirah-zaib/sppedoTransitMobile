@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity, ScrollView, StatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import React, { useState } from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function JourneySearchEntry() {
+export default function SearchEntry() {
   const router = useRouter();
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
@@ -21,9 +21,8 @@ export default function JourneySearchEntry() {
         </TouchableOpacity>
       </View>
 
-      {/* Input Route Mapping Form Module */}
+      {/* Input Route Fields */}
       <View style={styles.formCardBox}>
-        {/* Point A: Pickup Input Row */}
         <View style={styles.fieldFlexRow}>
           <View style={[styles.indicatorDot, { backgroundColor: '#CBD5E0' }]} />
           <TextInput 
@@ -33,19 +32,17 @@ export default function JourneySearchEntry() {
             value={pickup}
             onChangeText={setPickup}
           />
-          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => router.replace('/(tabs)/chatbot')}>
+          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => router.replace('/chatbot')}>
             <Ionicons name="mic-outline" size={20} color="#4A5568" />
           </TouchableOpacity>
         </View>
 
-        {/* Central Intersecting Structural Nodes for Location Swap */}
         <View style={styles.connectorLineLayout}>
           <TouchableOpacity style={styles.swapButtonNode} activeOpacity={0.8}>
             <Ionicons name="swap-vertical" size={16} color="#1A202C" />
           </TouchableOpacity>
         </View>
 
-        {/* Point B: Destination Target Input Row */}
         <View style={styles.fieldFlexRow}>
           <View style={[styles.indicatorDot, { backgroundColor: '#E53E3E' }]} />
           <TextInput 
@@ -55,13 +52,13 @@ export default function JourneySearchEntry() {
             value={destination}
             onChangeText={setDestination}
           />
-          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => router.replace('/(tabs)/chatbot')}>
+          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => router.replace('/chatbot')}>
             <Ionicons name="mic-outline" size={20} color="#4A5568" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Recent Activity List Layout */}
+      {/* Recent Activity */}
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollListPadding}>
         <Text style={styles.recentSectionHeader}>Recent Searches</Text>
 
@@ -70,7 +67,7 @@ export default function JourneySearchEntry() {
             <Ionicons name="repeat-outline" size={20} color="#718096" style={styles.searchItemIconBG} />
             <View>
               <Text style={styles.recentMainText}>Gulberg to RA Bazar</Text>
-              <Text style={styles.recentSubText}>Route 1A  •  25 min</Text>
+              <Text style={styles.recentSubText}>Route 1A • 25 min</Text>
             </View>
           </View>
           <Ionicons name="arrow-back-outline" size={18} color="#A0AEC0" style={styles.diagonalArrow} />
@@ -81,36 +78,23 @@ export default function JourneySearchEntry() {
             <Ionicons name="repeat-outline" size={20} color="#718096" style={styles.searchItemIconBG} />
             <View>
               <Text style={styles.recentMainText}>BaghbanPura to Gaju Mata</Text>
-              <Text style={styles.recentSubText}>Route 5  •  45 min</Text>
-            </View>
-          </View>
-          <Ionicons name="arrow-back-outline" size={18} color="#A0AEC0" style={styles.diagonalArrow} />
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.recentSearchCard}>
-          <View style={styles.recentLeftBlock}>
-            <Ionicons name="star-outline" size={20} color="#718096" style={styles.searchItemIconBG} />
-            <View>
-              <Text style={styles.recentMainText}>UCP Campus</Text>
-              <Text style={styles.recentSubText}>Saved Location</Text>
+              <Text style={styles.recentSubText}>Route 5 • 45 min</Text>
             </View>
           </View>
           <Ionicons name="arrow-back-outline" size={18} color="#A0AEC0" style={styles.diagonalArrow} />
         </TouchableOpacity>
 
         {/* Choose on Map Section */}
-                {/* Choose on Map Section */}
         <View style={styles.mapGraphicSectionContainer}>
           <View style={styles.mapLineGraphicDecoration} />
           <TouchableOpacity 
             style={styles.chooseMapButton} 
             activeOpacity={0.8}
-            onPress={() => router.push('/search-results')} // 🚀 Clicking this will now open the search results screen
+            onPress={() => router.push('./app/search-results')}
           >
             <Text style={styles.mapButtonTextText}>Choose on Map</Text>
           </TouchableOpacity>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
