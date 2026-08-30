@@ -1,80 +1,95 @@
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator, SafeAreaView, ScrollView } from 'react-native';
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
-// 📍 Wired to your ASP.NET Core local Voice API controller endpoint
-const CHATBOT_API_URL = 'http://192.168.0';
-
-interface ChatMessage {
-  id: string;
-  sender: 'user' | 'assistant';
-  text: string;
-}
-
-export default function VoiceChatbotHub() {
+export default function ChatbotScreen() {
   const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [conversation, setConversation] = useState<ChatMessage[]>([
-    { id: '1', sender: 'assistant', text: 'Assalam-o-Alaikum! Where do you want to travel in Lahore today? (English/Urdu/Punjabi)' }
-  ]);
-
-  const toggleRecordingWorkflow = async () => {
-    if (isRecording) {
-      // Stopping mic recording capture
-      setIsRecording(false);
-      setIsProcessing(true);
-      simulateVoicePayloadTransmission();
-    } else {
-      // Initializing physical phone mic audio stream capture pipeline
-      setIsRecording(true);
-    }
-  };
-
-  const simulateVoicePayloadTransmission = () => {
-    // Simulates binary .wav transmission fetch pipeline to Whisper engine workers
-    setTimeout(() => {
-      setConversation(prev => [
-        ...prev,
-        { id: Date.now().toString(), sender: 'user', text: 'From Kot Lakhpat to Thokar Niaz Baig' },
-        { id: (Date.now() + 1).toString(), sender: 'assistant', text: 'Route Found! Take Speedo Line 14 to Depot Chowk Junction Terminal, then swap directly onto Speedo Line 22.' }
-      ]);
-      setIsProcessing(false);
-    }, 2000);
-  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerBanner}>
-        <Text style={styles.bannerTitle}>Speedo AI Assistant</Text>
-        <Text style={styles.bannerSubtitle}>Voice Routing Optimizer Engine</Text>
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+      {/* 🟢 Premium Minimal Header Setup */}
+      <View style={styles.header}>
+        <TouchableOpacity style={styles.headerIconButton}>
+          <Ionicons name="menu-outline" size={24} color="#1A202C" />
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Speedo</Text>
+        <TouchableOpacity style={styles.headerIconButton}>
+          <Ionicons name="person-circle-outline" size={28} color="#718096" />
+        </TouchableOpacity>
       </View>
 
-      <ScrollView contentContainerStyle={styles.chatStream} showsVerticalScrollIndicator={false}>
-        {conversation.map((msg) => (
-          <View key={msg.id} style={[styles.bubbleWrapper, msg.sender === 'user' ? styles.userAlign : styles.assistantAlign]}>
-            <View style={[styles.bubble, msg.sender === 'user' ? styles.userBubble : styles.assistantBubble]}>
-              <Text style={msg.sender === 'user' ? styles.userText : styles.assistantText}>{msg.text}</Text>
+      <Text style={styles.dateLabel}>Today, 9:41 AM</Text>
+
+      {/* 💬 Conversation Stream */}
+      <ScrollView 
+        style={styles.chatFeed} 
+        contentContainerStyle={styles.feedContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* AI System Welcome Message (Dual-Language English & Urdu) */}
+        <View style={[styles.messageWrapper, styles.aiWrapper]}>
+          <View style={[styles.bubble, styles.aiBubble]}>
+            <Text style={styles.aiTextEn}>Hello! How can I help you navigate today?</Text>
+            <Text style={styles.aiTextUr}>السلام علیکم! میں آج آپ کی نیویگیشن میں کیسے مدد کر سکتا ہوں؟</Text>
+          </View>
+        </View>
+
+        {/* User Query Message */}
+        <View style={[styles.messageWrapper, styles.userWrapper]}>
+          <View style={[styles.bubble, styles.userBubble]}>
+            <Text style={styles.userText}>When is the next bus to Gulberg?</Text>
+          </View>
+        </View>
+
+        {/* AI Optimized Route Response */}
+        <View style={[styles.messageWrapper, styles.aiWrapper]}>
+          <View style={[styles.bubble, styles.aiBubble]}>
+            <Text style={styles.aiTextEn}>
+              The next Speedo bus to Gulberg (Route 4) arrives in <Text style={styles.boldText}>12 minutes</Text> at Liberty Station.
+            </Text>
+            <Text style={styles.aiTextUr}>
+              اگلی سپیڈو بس گلبرگ کے لیے (روٹ 4) 12 منٹ میں لبرٹی اسٹیشن پہ آۓ گی۔
+            </Text>
+
+            {/* Embedded Micro-Route Card from your Stitch UI design */}
+            <View style={styles.embeddedRouteCard}>
+              <View style={styles.routeLeftSection}>
+                <View style={styles.busIconContainer}>
+                  <Ionicons name="bus-outline" size={18} color="#FFFFFF" />
+                </View>
+                <View style={styles.routeMeta}>
+                  <Text style={styles.routeNameText}>Route 4</Text>
+                  <Text style={styles.routeStationText}>Liberty Station</Text>
+                </View>
+              </View>
+              <Text style={styles.timeBadgeText}>12m</Text>
             </View>
           </View>
-        ))}
-        {isProcessing && (
-          <View style={styles.loaderRow}>
-            <ActivityIndicator color="#046A38" size="small" />
-            <Text style={styles.loaderLabel}>Whisper AI Transcribing Speech Scripts...</Text>
-          </View>
-        )}
+        </View>
       </ScrollView>
 
-      {/* Persistent Floating Mic Action Control Dock */}
-      <View style={styles.microphoneDock}>
-        <Text style={styles.dockInstruction}>
-          {isRecording ? '🔴 Listening closely... Tap again to process audio text' : 'Tap mic icon to state transit query parameters'}
-        </Text>
+      {/* Dynamic Voice Control System Panel */}
+      <View style={styles.voiceControlPanel}>
         <TouchableOpacity 
-          style={[styles.micCircle, isRecording && styles.micRecordingActive]} 
-          onPress={toggleRecordingWorkflow}
+          style={[styles.micButton, isRecording && styles.micButtonActive]}
+          onPress={() => setIsRecording(!isRecording)}
           activeOpacity={0.8}
         >
-          <Text style={styles.micEmojiIcon}>{isRecording ? '⏹️' : '🎙️'}</Text>
+          <Ionicons 
+            name="mic" 
+            size={28} 
+            color="#FFFFFF" 
+          />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -82,24 +97,151 @@ export default function VoiceChatbotHub() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAFAFA' },
-  headerBanner: { backgroundColor: '#046A38', padding: 20, borderBottomLeftRadius: 16, borderBottomRightRadius: 16 },
-  bannerTitle: { fontSize: 22, fontWeight: 'bold', color: '#FFFFFF' },
-  bannerSubtitle: { fontSize: 13, color: '#A3D9C9', marginTop: 2 },
-  chatStream: { padding: 20, paddingBottom: 140 },
-  bubbleWrapper: { width: '100%', flexDirection: 'row', marginBottom: 14 },
-  userAlign: { justifyContent: 'flex-end' },
-  assistantAlign: { justifyContent: 'flex-start' },
-  bubble: { maxWidth: '80%', paddingHorizontal: 16, paddingVertical: 12, borderRadius: 16 },
-  userBubble: { backgroundColor: '#046A38', borderBottomRightRadius: 2 },
-  assistantBubble: { backgroundColor: '#EBEBEB', borderBottomLeftRadius: 2 },
-  userText: { color: '#FFFFFF', fontSize: 15 },
-  assistantText: { color: '#212121', fontSize: 15, lineHeight: 20 },
-  loaderRow: { flexDirection: 'row', alignItems: 'center', gap: 10, alignSelf: 'flex-start', marginLeft: 10 },
-  loaderLabel: { fontSize: 13, color: '#666666' },
-  microphoneDock: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFFFFF', paddingTop: 16, paddingBottom: 24, alignItems: 'center', borderTopWidth: 1, borderColor: '#EBEBEB', shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 10 },
-  dockInstruction: { fontSize: 13, color: '#666666', marginBottom: 12, fontWeight: '500' },
-  micCircle: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#046A38', alignItems: 'center', justifyContent: 'center', elevation: 4 },
-  micRecordingActive: { backgroundColor: '#D32F2F' },
-  micEmojiIcon: { fontSize: 28, color: '#FFFFFF' }
+  container: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  header: {
+    height: 60,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderColor: '#F0F4F8',
+  },
+  headerIconButton: {
+    padding: 6,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#046A38',
+    letterSpacing: 0.5,
+  },
+  dateLabel: {
+    textAlign: 'center',
+    fontSize: 11,
+    color: '#A0AEC0',
+    fontWeight: '600',
+    marginTop: 14,
+    marginBottom: 6,
+  },
+  chatFeed: {
+    flex: 1,
+  },
+  feedContent: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  messageWrapper: {
+    marginBottom: 16,
+    maxWidth: '85%',
+  },
+  userWrapper: {
+    alignSelf: 'flex-end',
+  },
+  aiWrapper: {
+    alignSelf: 'flex-start',
+  },
+  bubble: {
+    borderRadius: 18,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+  },
+  userBubble: {
+    backgroundColor: '#046A38',
+    borderBottomRightRadius: 4,
+  },
+  aiBubble: {
+    backgroundColor: '#F7FAFC',
+    borderBottomLeftRadius: 4,
+    borderWidth: 1,
+    borderColor: '#EDF2F7',
+  },
+  userText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  aiTextEn: {
+    color: '#2D3748',
+    fontSize: 14,
+    lineHeight: 20,
+    fontWeight: '500',
+  },
+  aiTextUr: {
+    color: '#4A5568',
+    fontSize: 15,
+    lineHeight: 26,
+    textAlign: 'right',
+    marginTop: 8,
+    fontWeight: '500',
+  },
+  boldText: {
+    fontWeight: '700',
+    color: '#046A38',
+  },
+  embeddedRouteCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 14,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  routeLeftSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  busIconContainer: {
+    backgroundColor: '#046A38',
+    padding: 8,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  routeMeta: {
+    justifyContent: 'center',
+  },
+  routeNameText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1A202C',
+  },
+  routeStationText: {
+    fontSize: 11,
+    color: '#718096',
+    marginTop: 1,
+  },
+  timeBadgeText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#046A38',
+  },
+  voiceControlPanel: {
+    paddingBottom: 25,
+    paddingTop: 10,
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  micButton: {
+    backgroundColor: '#046A38',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#046A38',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+  },
+  micButtonActive: {
+    backgroundColor: '#E53E3E',
+    shadowColor: '#E53E3E',
+  },
 });
