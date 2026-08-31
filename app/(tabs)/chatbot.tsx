@@ -1,247 +1,75 @@
-import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View
-} from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function ChatbotScreen() {
+export default function AIVoiceChatbotScreen() {
   const [isRecording, setIsRecording] = useState(false);
+  const [textMessage, setTextMessage] = useState('');
+  const [feed, setFeed] = useState([
+    { id: '1', text: 'Hello! Speak or type your destination route requirement.', type: 'ai' }
+  ]);
+
+  const handleSendMessage = () => {
+    if (!textMessage.trim()) return;
+    const userMsg = { id: Date.now().toString(), text: textMessage, type: 'user' };
+    setFeed(prev => [...prev, userMsg]);
+    setTextMessage('');
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      {/* 🟢 Premium Minimal Header Setup */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.headerIconButton}>
-          <Ionicons name="menu-outline" size={24} color="#1A202C" />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Speedo</Text>
-        <TouchableOpacity style={styles.headerIconButton}>
-          <Ionicons name="person-circle-outline" size={28} color="#718096" />
-        </TouchableOpacity>
-      </View>
-
-      <Text style={styles.dateLabel}>Today, 9:41 AM</Text>
-
-      {/* 💬 Conversation Stream */}
-      <ScrollView 
-        style={styles.chatFeed} 
-        contentContainerStyle={styles.feedContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* AI System Welcome Message (Dual-Language English & Urdu) */}
-        <View style={[styles.messageWrapper, styles.aiWrapper]}>
-          <View style={[styles.bubble, styles.aiBubble]}>
-            <Text style={styles.aiTextEn}>Hello! How can I help you navigate today?</Text>
-            <Text style={styles.aiTextUr}>السلام علیکم! میں آج آپ کی نیویگیشن میں کیسے مدد کر سکتا ہوں؟</Text>
-          </View>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}>AI Voice Hub</Text>
         </View>
 
-        {/* User Query Message */}
-        <View style={[styles.messageWrapper, styles.userWrapper]}>
-          <View style={[styles.bubble, styles.userBubble]}>
-            <Text style={styles.userText}>When is the next bus to Gulberg?</Text>
-          </View>
-        </View>
-
-        {/* AI Optimized Route Response */}
-        <View style={[styles.messageWrapper, styles.aiWrapper]}>
-          <View style={[styles.bubble, styles.aiBubble]}>
-            <Text style={styles.aiTextEn}>
-              The next Speedo bus to Gulberg (Route 4) arrives in <Text style={styles.boldText}>12 minutes</Text> at Liberty Station.
-            </Text>
-            <Text style={styles.aiTextUr}>
-              اگلی سپیڈو بس گلبرگ کے لیے (روٹ 4) 12 منٹ میں لبرٹی اسٹیشن پہ آۓ گی۔
-            </Text>
-
-            {/* Embedded Micro-Route Card from your Stitch UI design */}
-            <View style={styles.embeddedRouteCard}>
-              <View style={styles.routeLeftSection}>
-                <View style={styles.busIconContainer}>
-                  <Ionicons name="bus-outline" size={18} color="#FFFFFF" />
-                </View>
-                <View style={styles.routeMeta}>
-                  <Text style={styles.routeNameText}>Route 4</Text>
-                  <Text style={styles.routeStationText}>Liberty Station</Text>
-                </View>
-              </View>
-              <Text style={styles.timeBadgeText}>12m</Text>
+        <ScrollView contentContainerStyle={styles.scrollFeed} showsVerticalScrollIndicator={false}>
+          {feed.map(item => (
+            <View key={item.id} style={[styles.bubble, item.type === 'user' ? styles.userBubble : styles.aiBubble]}>
+              <Text style={item.type === 'user' ? styles.userText : styles.aiText}>{item.text}</Text>
             </View>
-          </View>
-        </View>
-      </ScrollView>
+          ))}
+        </ScrollView>
 
-      {/* Dynamic Voice Control System Panel */}
-      <View style={styles.voiceControlPanel}>
-        <TouchableOpacity 
-          style={[styles.micButton, isRecording && styles.micButtonActive]}
-          onPress={() => setIsRecording(!isRecording)}
-          activeOpacity={0.8}
-        >
-          <Ionicons 
-            name="mic" 
-            size={28} 
-            color="#FFFFFF" 
+        {/* Unified Audio + Text Input Box Panel */}
+        <View style={styles.inputBarRow}>
+          <TouchableOpacity 
+            style={[styles.micActionCircle, isRecording && { backgroundColor: '#E53E3E' }]}
+            onPress={() => setIsRecording(!isRecording)}
+          >
+            <Ionicons name={isRecording ? "stop" : "mic"} size={22} color="#FFFFFF" />
+          </TouchableOpacity>
+          
+          <TextInput 
+            style={styles.chatTextInputField}
+            placeholder="Type your destination..."
+            placeholderTextColor="#A0AEC0"
+            value={textMessage}
+            onChangeText={setTextMessage}
+            onSubmitEditing={handleSendMessage}
           />
-        </TouchableOpacity>
-      </View>
+          
+          <TouchableOpacity style={styles.sendBtn} onPress={handleSendMessage}>
+            <Ionicons name="send" size={18} color="#046A38" />
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  header: {
-    height: 60,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderColor: '#F0F4F8',
-  },
-  headerIconButton: {
-    padding: 6,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#046A38',
-    letterSpacing: 0.5,
-  },
-  dateLabel: {
-    textAlign: 'center',
-    fontSize: 11,
-    color: '#A0AEC0',
-    fontWeight: '600',
-    marginTop: 14,
-    marginBottom: 6,
-  },
-  chatFeed: {
-    flex: 1,
-  },
-  feedContent: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  messageWrapper: {
-    marginBottom: 16,
-    maxWidth: '85%',
-  },
-  userWrapper: {
-    alignSelf: 'flex-end',
-  },
-  aiWrapper: {
-    alignSelf: 'flex-start',
-  },
-  bubble: {
-    borderRadius: 18,
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  userBubble: {
-    backgroundColor: '#046A38',
-    borderBottomRightRadius: 4,
-  },
-  aiBubble: {
-    backgroundColor: '#F7FAFC',
-    borderBottomLeftRadius: 4,
-    borderWidth: 1,
-    borderColor: '#EDF2F7',
-  },
-  userText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  aiTextEn: {
-    color: '#2D3748',
-    fontSize: 14,
-    lineHeight: 20,
-    fontWeight: '500',
-  },
-  aiTextUr: {
-    color: '#4A5568',
-    fontSize: 15,
-    lineHeight: 26,
-    textAlign: 'right',
-    marginTop: 8,
-    fontWeight: '500',
-  },
-  boldText: {
-    fontWeight: '700',
-    color: '#046A38',
-  },
-  embeddedRouteCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 12,
-    marginTop: 14,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  routeLeftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  busIconContainer: {
-    backgroundColor: '#046A38',
-    padding: 8,
-    borderRadius: 8,
-    marginRight: 12,
-  },
-  routeMeta: {
-    justifyContent: 'center',
-  },
-  routeNameText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#1A202C',
-  },
-  routeStationText: {
-    fontSize: 11,
-    color: '#718096',
-    marginTop: 1,
-  },
-  timeBadgeText: {
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#046A38',
-  },
-  voiceControlPanel: {
-    paddingBottom: 25,
-    paddingTop: 10,
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  micButton: {
-    backgroundColor: '#046A38',
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 3,
-    shadowColor: '#046A38',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-  },
-  micButtonActive: {
-    backgroundColor: '#E53E3E',
-    shadowColor: '#E53E3E',
-  },
+  container: { flex: 1, backgroundColor: '#FFFFFF' },
+  header: { height: 55, justifyContent: 'center', alignItems: 'center', borderBottomWidth: 1, borderColor: '#EDF2F7' },
+  headerTitle: { fontSize: 16, fontWeight: '700', color: '#046A38' },
+  scrollFeed: { padding: 20 },
+  bubble: { padding: 14, borderRadius: 14, marginBottom: 12, maxWidth: '80%' },
+  userBubble: { backgroundColor: '#046A38', alignSelf: 'flex-end' },
+  aiBubble: { backgroundColor: '#F7FAFC', alignSelf: 'flex-start', borderWidth: 1, borderColor: '#E2E8F0' },
+  userText: { color: '#FFFFFF', fontSize: 14 },
+  aiText: { color: '#2D3748', fontSize: 14 },
+  inputBarRow: { flexDirection: 'row', paddingHorizontal: 16, paddingVertical: 12, borderTopWidth: 1, borderColor: '#EDF2F7', alignItems: 'center', backgroundColor: '#FFFFFF' },
+  micActionCircle: { width: 42, height: 42, borderRadius: 21, backgroundColor: '#046A38', justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  chatTextInputField: { flex: 1, height: 42, backgroundColor: '#F7FAFC', borderRadius: 12, paddingHorizontal: 14, borderWidth: 1, borderColor: '#EDF2F7', color: '#2D3748' },
+  sendBtn: { padding: 10, marginLeft: 4 }
 });

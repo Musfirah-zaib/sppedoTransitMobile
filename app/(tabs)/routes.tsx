@@ -1,14 +1,15 @@
-import React from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  View, 
-  SafeAreaView, 
-  FlatList, 
-  TouchableOpacity, 
-  StatusBar 
-} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import {
+  FlatList,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
 interface TransitRoute {
   id: string;
@@ -19,6 +20,8 @@ interface TransitRoute {
 }
 
 export default function RoutesScreen() {
+  const router = useRouter();
+  
   const routesData: TransitRoute[] = [
     { id: '1', name: 'Route 1', description: 'Downtown Loop', status: 'Clear', statusColor: '#48BB78' },
     { id: '2', name: 'Route 2', description: 'Northside Express', status: 'Busy', statusColor: '#ECC94B' },
@@ -57,7 +60,14 @@ export default function RoutesScreen() {
         contentContainerStyle={styles.listContainer}
         showsVerticalScrollIndicator={false}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.routeItemCard} activeOpacity={0.7}>
+          <TouchableOpacity 
+            style={styles.routeItemCard} 
+            activeOpacity={0.7}
+            onPress={() => router.push({
+              pathname: '/route-details' as any,
+              params: { selectedBus: item.name }
+            })}
+          >
             <View style={styles.cardLeftContent}>
               <View style={styles.iconContainer}>
                 <Ionicons name="bus-outline" size={20} color="#718096" />

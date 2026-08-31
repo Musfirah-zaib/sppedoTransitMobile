@@ -1,20 +1,27 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { useAuth } from '../_layout'; // 🚀 IMPORT THE AUTH HOOK HERE
 import { ActivityIndicator, KeyboardAvoidingView, Platform, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function LoginScreen() {
   const router = useRouter();
+  const { setIsAuthenticated } = useAuth(); // 🚀 DESTRUCT OUR STATE MODIFIER
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleLoginSubmit = () => {
     setIsSubmitting(true);
-    // 🚀 TEMPORARY HARD BYPASS: Skip API connection checks during UI design phase
     setTimeout(() => {
       setIsSubmitting(false);
+      setIsAuthenticated(true); // 🚀 TURN GUARD PROTECTION OFF
       router.replace('/(tabs)/dashboard');
     }, 400);
+  };
+
+  const handleGuestSubmit = () => {
+    setIsAuthenticated(true); // 🚀 TURN GUARD PROTECTION OFF FOR GUEST MODE TOO
+    router.replace('/(tabs)/dashboard');
   };
 
   return (
@@ -76,13 +83,15 @@ export default function LoginScreen() {
               </View>
               <Text style={styles.googleButtonText}>Continue with Google</Text>
             </TouchableOpacity>
-                        {/* 🚀 New Guest Mode Bypass Node */}
+
             <TouchableOpacity 
               style={styles.guestButton} 
-              onPress={() => router.replace('/(tabs)/dashboard')}
-              activeOpacity={0.7}>
+              onPress={handleGuestSubmit}
+              activeOpacity={0.7}
+            >
               <Text style={styles.guestButtonText}>Continue as Guest</Text>
             </TouchableOpacity>
+
             <View style={styles.switchAuthRow}>
               <Text style={styles.switchLabel}>New to Speedo Transit? </Text>
               <TouchableOpacity onPress={() => router.push('/signup')}>
@@ -115,7 +124,6 @@ const styles = StyleSheet.create({
   googleButtonText: { color: '#212121', fontSize: 16, fontWeight: '600' },
   googleIconContainer: { width: 18, height: 18, position: 'relative', overflow: 'hidden' },
   quadrant: { position: 'absolute', width: 10, height: 10, borderRadius: 2 },
-    guestButton: { height: 50, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7FAFC', borderWidth: 1, borderColor: '#E2E8F0', marginTop: 12 },
-  guestButtonText: { color: '#4A5568', fontSize: 16, fontWeight: '600' },
-
+  guestButton: { height: 50, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: '#F7FAFC', borderWidth: 1, borderColor: '#E2E8F0', marginTop: 12 },
+  guestButtonText: { color: '#4A5568', fontSize: 16, fontWeight: '600' }
 });

@@ -1,17 +1,25 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext, useContext } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+
+// Create a global context to manage our guest/auth status
+const AuthContext = createContext({
+  isAuthenticated: false,
+  setIsAuthenticated: (val: boolean) => {}
+});
+
+export const useAuth = () => useContext(AuthContext);
 
 export default function GlobalRootAppLayout() {
   const segments = useSegments();
   const router = useRouter();
   
   const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // Guest mode skips this state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const initializeApp = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Smooth entry window
+      await new Promise(resolve => setTimeout(resolve, 1000));
       setIsLoading(false);
     };
     initializeApp();
@@ -20,12 +28,11 @@ export default function GlobalRootAppLayout() {
   useEffect(() => {
     if (isLoading) return;
 
-    // Check what group the current screen is in
     const inAuthGroup = segments[0] === '(auth)';
     const inTabsGroup = segments[0] === '(tabs)';
 
-    // Dynamic routing fallback loop
-    if (!isAuthenticated && !inAuthGroup && !inTabsGroup) {
+    // If the user isn't logged in or hasn't selected Guest Mode, keep them inside the authentication wall
+    if (!isAuthenticated && !inAuthGroup) {
       router.replace('/(auth)/login');
     }
   }, [isAuthenticated, isLoading, segments]);
@@ -39,13 +46,18 @@ export default function GlobalRootAppLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="index" />
-      <Stack.Screen name="(auth)" />
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="search-entry" />
-      <Stack.Screen name="search-results" />
-      <Stack.Screen name="route-details" />
-    </Stack>
+    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="search-entry" />
+        <Stack.Screen name="search-results" />
+        <Stack.Screen name="route-details" />
+        <Stack.Screen name="notifications" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="alarm-set" />
+      </Stack>
+    </AuthContext.Provider>
   );
 }
