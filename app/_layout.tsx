@@ -1,8 +1,8 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect, useState, createContext, useContext } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-// Create a global context to manage our guest/auth status
 const AuthContext = createContext({
   isAuthenticated: false,
   setIsAuthenticated: (val: boolean) => {}
@@ -28,11 +28,14 @@ export default function GlobalRootAppLayout() {
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === '(auth)';
-    const inTabsGroup = segments[0] === '(tabs)';
+    // 🚀 FIXED: Force segment arrays data to string lists to bypass compilation errors
+    const stringSegments = segments as string[];
 
-    // If the user isn't logged in or hasn't selected Guest Mode, keep them inside the authentication wall
-    if (!isAuthenticated && !inAuthGroup) {
+    const inAuthGroup = stringSegments.includes('(auth)');
+    const inTabsGroup = stringSegments.includes('(tabs)');
+
+    // Fallback security protection wall redirection mapping sequence
+    if (!isAuthenticated && !inAuthGroup && !inTabsGroup) {
       router.replace('/(auth)/login');
     }
   }, [isAuthenticated, isLoading, segments]);
@@ -46,18 +49,22 @@ export default function GlobalRootAppLayout() {
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="search-entry" />
-        <Stack.Screen name="search-results" />
-        <Stack.Screen name="route-details" />
-        <Stack.Screen name="notifications" />
-        <Stack.Screen name="settings" />
-        <Stack.Screen name="alarm-set" />
-      </Stack>
-    </AuthContext.Provider>
+    <SafeAreaProvider>
+      <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          {/* Explicitly register entry point index mapping track */}
+          <Stack.Screen name="index" />
+          <Stack.Screen name="splash" />
+          <Stack.Screen name="(auth)/login" />
+          <Stack.Screen name="(auth)/signup" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="search-entry" />
+          <Stack.Screen name="search-results" />
+          <Stack.Screen name="route-details" />
+          <Stack.Screen name="notifications" />
+          <Stack.Screen name="settings" />
+        </Stack>
+      </AuthContext.Provider>
+    </SafeAreaProvider>
   );
 }

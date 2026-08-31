@@ -1,28 +1,49 @@
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, TextInput, TouchableOpacity, ScrollView, StatusBar, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 export default function SearchEntry() {
   const router = useRouter();
   const [pickup, setPickup] = useState('');
   const [destination, setDestination] = useState('');
 
+  // 🎙️ Handle specialized mic-to-field tracking inputs
+  const triggerFieldVoiceInput = (fieldName: 'Pickup' | 'Destination') => {
+    Alert.alert(
+      "Voice Capture Active",
+      `Listening for ${fieldName} query parameter... (Speech will translate straight into this field via C# Whisper API downstream).`,
+      [
+        { 
+          text: "Simulate Transcription", 
+          onPress: () => {
+            if (fieldName === 'Pickup') setPickup('Kot Lakhpat Station');
+            else setDestination('Thokar Niaz Baig');
+          } 
+        },
+        { text: "Cancel", style: "cancel" }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+
+      {/* Synchronized Header Navigation Row */}
       <View style={styles.searchHeaderRow}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
           <Ionicons name="arrow-back" size={24} color="#1A202C" />
         </TouchableOpacity>
         <Text style={styles.appTitleText}>Speedo</Text>
-        <TouchableOpacity style={styles.profileButton}>
+        <TouchableOpacity style={styles.profileButton} onPress={() => router.push('/settings')}>
           <Ionicons name="person-outline" size={20} color="#1A202C" />
         </TouchableOpacity>
       </View>
 
-      {/* Input Route Fields */}
+      {/* Input Route Mapping Form Module */}
       <View style={styles.formCardBox}>
+        {/* Point A: Pickup Input Row */}
         <View style={styles.fieldFlexRow}>
           <View style={[styles.indicatorDot, { backgroundColor: '#CBD5E0' }]} />
           <TextInput 
@@ -32,17 +53,23 @@ export default function SearchEntry() {
             value={pickup}
             onChangeText={setPickup}
           />
-          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => router.replace('/chatbot')}>
-            <Ionicons name="mic-outline" size={20} color="#4A5568" />
+          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => triggerFieldVoiceInput('Pickup')}>
+            <Ionicons name="mic-outline" size={20} color="#046A38" />
           </TouchableOpacity>
         </View>
 
+        {/* Central Intersecting Location Swap Node */}
         <View style={styles.connectorLineLayout}>
-          <TouchableOpacity style={styles.swapButtonNode} activeOpacity={0.8}>
+          <TouchableOpacity style={styles.swapButtonNode} activeOpacity={0.8} onPress={() => {
+            const temp = pickup;
+            setPickup(destination);
+            setDestination(temp);
+          }}>
             <Ionicons name="swap-vertical" size={16} color="#1A202C" />
           </TouchableOpacity>
         </View>
 
+        {/* Point B: Destination Target Input Row */}
         <View style={styles.fieldFlexRow}>
           <View style={[styles.indicatorDot, { backgroundColor: '#E53E3E' }]} />
           <TextInput 
@@ -52,47 +79,47 @@ export default function SearchEntry() {
             value={destination}
             onChangeText={setDestination}
           />
-          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => router.replace('/chatbot')}>
-            <Ionicons name="mic-outline" size={20} color="#4A5568" />
+          <TouchableOpacity style={styles.fieldMicIconTouch} onPress={() => triggerFieldVoiceInput('Destination')}>
+            <Ionicons name="mic-outline" size={20} color="#046A38" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Recent Activity */}
+      {/* Recent Activity List Layout */}
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollListPadding}>
         <Text style={styles.recentSectionHeader}>Recent Searches</Text>
 
-        <TouchableOpacity style={styles.recentSearchCard}>
+        <TouchableOpacity style={styles.recentSearchCard} onPress={() => { setPickup('Gulberg'); setDestination('RA Bazar'); }}>
           <View style={styles.recentLeftBlock}>
             <Ionicons name="repeat-outline" size={20} color="#718096" style={styles.searchItemIconBG} />
             <View>
               <Text style={styles.recentMainText}>Gulberg to RA Bazar</Text>
-              <Text style={styles.recentSubText}>Route 1A • 25 min</Text>
+              <Text style={styles.recentSubText}>Route 1A  •  25 min</Text>
             </View>
           </View>
           <Ionicons name="arrow-back-outline" size={18} color="#A0AEC0" style={styles.diagonalArrow} />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.recentSearchCard}>
+        <TouchableOpacity style={styles.recentSearchCard} onPress={() => { setPickup('BaghbanPura'); setDestination('Gaju Mata'); }}>
           <View style={styles.recentLeftBlock}>
             <Ionicons name="repeat-outline" size={20} color="#718096" style={styles.searchItemIconBG} />
             <View>
               <Text style={styles.recentMainText}>BaghbanPura to Gaju Mata</Text>
-              <Text style={styles.recentSubText}>Route 5 • 45 min</Text>
+              <Text style={styles.recentSubText}>Route 5  •  45 min</Text>
             </View>
           </View>
           <Ionicons name="arrow-back-outline" size={18} color="#A0AEC0" style={styles.diagonalArrow} />
         </TouchableOpacity>
 
-        {/* Choose on Map Section */}
+        {/* Choose on Map / Submit Search Button Section */}
         <View style={styles.mapGraphicSectionContainer}>
           <View style={styles.mapLineGraphicDecoration} />
           <TouchableOpacity 
             style={styles.chooseMapButton} 
             activeOpacity={0.8}
-            onPress={() => router.push('./app/search-results')}
+            onPress={() => router.push('/search-results')} // 🚀 Routes to multi-hop choices screen
           >
-            <Text style={styles.mapButtonTextText}>Choose on Map</Text>
+            <Text style={styles.mapButtonTextText}>Find Routes & Fares</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -123,6 +150,6 @@ const styles = StyleSheet.create({
   diagonalArrow: { transform: [{ rotate: '135deg' }] },
   mapGraphicSectionContainer: { marginTop: 30, alignItems: 'center', position: 'relative', height: 80, justifyContent: 'center' },
   mapLineGraphicDecoration: { position: 'absolute', width: '100%', height: 2, backgroundColor: '#F0F4F8', zIndex: 1 },
-  chooseMapButton: { backgroundColor: '#FFFFFF', paddingHorizontal: 24, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: '#E2E8F0', zIndex: 5, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2 },
+  chooseMapButton: { backgroundColor: '#FFFFFF', paddingHorizontal: 24, paddingVertical: 10, borderRadius: 20, borderWidth: 1, borderColor: '#E2E8F0', zIndex: 5, elevation: 2 },
   mapButtonTextText: { fontSize: 13, fontWeight: '700', color: '#046A38' }
 });
