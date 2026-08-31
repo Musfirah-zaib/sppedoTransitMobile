@@ -52,7 +52,6 @@ export default function GlobalRootAppLayout() {
     <SafeAreaProvider>
       <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
         <Stack screenOptions={{ headerShown: false }}>
-          {/* Explicitly register entry point index mapping track */}
           <Stack.Screen name="index" />
           <Stack.Screen name="splash" />
           <Stack.Screen name="(auth)/login" />

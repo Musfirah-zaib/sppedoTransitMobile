@@ -13,6 +13,7 @@ interface OptimizedRoute {
 }
 
 export default function SearchResults() {
+
   const router = useRouter();
   const { origin, target } = useLocalSearchParams();
   const [loading, setLoading] = useState(true);
