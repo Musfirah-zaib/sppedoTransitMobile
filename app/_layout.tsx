@@ -1,5 +1,5 @@
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { useEffect, useState, createContext, useContext } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -19,7 +19,7 @@ export default function GlobalRootAppLayout() {
 
   useEffect(() => {
     const initializeApp = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 1200));
       setIsLoading(false);
     };
     initializeApp();
@@ -28,14 +28,20 @@ export default function GlobalRootAppLayout() {
   useEffect(() => {
     if (isLoading) return;
 
-    // 🚀 FIXED: Force segment arrays data to string lists to bypass compilation errors
     const stringSegments = segments as string[];
-
     const inAuthGroup = stringSegments.includes('(auth)');
     const inTabsGroup = stringSegments.includes('(tabs)');
+    
+    // 🚀 FIX: Whitelist all your standalone utility screens so the security guard lets you pass!
+    const isAllowedSubScreen = 
+      stringSegments.includes('settings') || 
+      stringSegments.includes('notifications') || 
+      stringSegments.includes('search-entry') || 
+      stringSegments.includes('search-results') || 
+      stringSegments.includes('route-details') ||
+      stringSegments.includes('alarm-set');
 
-    // Fallback security protection wall redirection mapping sequence
-    if (!isAuthenticated && !inAuthGroup && !inTabsGroup) {
+    if (!isAuthenticated && !inAuthGroup && !inTabsGroup && !isAllowedSubScreen) {
       router.replace('/(auth)/login');
     }
   }, [isAuthenticated, isLoading, segments]);
@@ -67,3 +73,4 @@ export default function GlobalRootAppLayout() {
     </SafeAreaProvider>
   );
 }
+;'['

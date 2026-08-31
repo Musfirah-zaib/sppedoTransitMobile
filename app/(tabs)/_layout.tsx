@@ -1,70 +1,57 @@
-import { Stack, useRouter, useSegments } from 'expo-router';
-import { useEffect, useState, createContext, useContext } from 'react';
-import { ActivityIndicator, View } from 'react-native';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
+import React from 'react';
 
-const AuthContext = createContext({
-  isAuthenticated: false,
-  setIsAuthenticated: (val: boolean) => {}
-});
-
-export const useAuth = () => useContext(AuthContext);
-
-export default function GlobalRootAppLayout() {
-  const segments = useSegments();
-  const router = useRouter();
-  
-  const [isLoading, setIsLoading] = useState(true);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const initializeApp = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1200));
-      setIsLoading(false);
-    };
-    initializeApp();
-  }, []);
-
-  useEffect(() => {
-    if (isLoading) return;
-
-  // Force TypeScript to treat segments as a standard string array
-const stringSegments = segments as string[];
-
-const inAuthGroup = stringSegments.includes('(auth)');
-const inTabsGroup = stringSegments.includes('(tabs)');
-
-
-    // Fallback authentication layout wall protection mapping sequence
-    if (!isAuthenticated && !inAuthGroup && !inTabsGroup) {
-      router.replace('/(auth)/login');
-    }
-  }, [isAuthenticated, isLoading, segments]);
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#046A38' }}>
-        <ActivityIndicator size="large" color="#ffffff" />
-      </View>
-    );
-  }
-
+export default function TabsLayout() {
   return (
-    <SafeAreaProvider>
-      <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>
-        <Stack screenOptions={{ headerShown: false }}>
-          {/* Explicitly map matching physical folder structure screens to remove errors */}
-          <Stack.Screen name="splash" />
-          <Stack.Screen name="(auth)/login" />
-          <Stack.Screen name="(auth)/signup" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="search-entry" />
-          <Stack.Screen name="search-results" />
-          <Stack.Screen name="route-details" />
-          <Stack.Screen name="notifications" />
-          <Stack.Screen name="settings" />
-        </Stack>
-      </AuthContext.Provider>
-    </SafeAreaProvider>
+    <Tabs
+      screenOptions={{
+        headerShown: false, 
+        tabBarActiveTintColor: '#046A38',
+        tabBarInactiveTintColor: '#718096',
+        tabBarStyle: { 
+          backgroundColor: '#FFFFFF', 
+          borderTopWidth: 1, 
+          borderTopColor: '#E2E8F0', 
+          height: 70,        // 🚀 Tall layout frame provides full spacing protection
+          paddingBottom: 14,  // 🚀 Lifts screen indicators clearly into visible ranges
+          paddingTop: 10,
+        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: '700' }
+      }}
+    >
+      <Tabs.Screen 
+        name="dashboard" 
+        options={{ 
+          title: 'Speedo Hub', 
+          tabBarLabel: 'Home', 
+          tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={color} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="routes" 
+        options={{ 
+          title: 'Routes', 
+          tabBarLabel: 'Routes', 
+          tabBarIcon: ({ color, size }) => <Ionicons name="bus-outline" size={size} color={color} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="alarm-set" 
+        options={{ 
+          title: 'Alarms', 
+          tabBarLabel: 'Alarms', 
+          tabBarIcon: ({ color, size }) => <Ionicons name="alarm-outline" size={size} color={color} /> 
+        }} 
+      />
+      <Tabs.Screen 
+        name="chatbot" 
+        options={{ 
+          title: 'AI Assistant', 
+          tabBarLabel: 'AI Voice', 
+          tabBarIcon: ({ color, size }) => <Ionicons name="mic-outline" size={size} color={color} /> 
+        }} 
+      />
+    </Tabs>
   );
 }
