@@ -6,13 +6,13 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StatusBar,
-  ActivityIndicator
+  ActivityIndicator,
+  Platform
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { API_URL } from '../../config'; 
-
+import { API_URL } from '../config'; 
 
 interface BusStop {
   id: string;
@@ -32,18 +32,18 @@ export default function DashboardScreen() {
     { id: '2', name: 'Thokar Niaz Baig Interchange', distance: '1.8 km away', lines: ['Speedo 22', 'Speedo 34'] }
   ];
 
-  useEffect(() => {
-    fetchLiveTransitData();
-  }, []);
   const fetchLiveTransitData = async () => {
     try {
       setIsLoading(true);
       setIsBackendOffline(false);
+      
       const response = await fetch(`${API_URL}/admin/stops/nearby?latitude=31.4806&longitude=74.3213`, {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Bypass-Tunnel-Reminder': 'true', 
+          'User-Agent': 'SpeedoTransitMobileClient'
         }
       });
 
@@ -55,13 +55,17 @@ export default function DashboardScreen() {
         setStops(fallbackSeededStops);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Failed to fetch live database records from your ASP.NET Core server:", error);
       setIsBackendOffline(true);
       setStops(fallbackSeededStops); 
     } finally {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchLiveTransitData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
@@ -140,7 +144,7 @@ const styles = StyleSheet.create({
   appBar: { height: 60, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20, borderBottomWidth: 1, borderColor: '#F0F4F8', backgroundColor: '#FFFFFF' },
   iconButton: { padding: 4 },
   brandTitle: { fontSize: 22, fontWeight: '700', color: '#046A38', letterSpacing: 0.5 },
-  scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 130 }, // 🚀 Expanded lower cushion to pull history up past the navigation bar boundaries
+  scrollContent: { paddingHorizontal: 20, paddingTop: 10, paddingBottom: 130 },
   searchBarContainer: { height: 54, backgroundColor: '#F7FAFC', borderRadius: 14, borderWidth: 1, borderColor: '#EDF2F7', flexDirection: 'row', alignItems: 'center', paddingLeft: 16, paddingRight: 6, marginVertical: 14 },
   searchPlaceholderText: { flex: 1, marginLeft: 12, color: '#A0AEC0', fontSize: 15, fontWeight: '500' },
   searchMicButton: { width: 42, height: 42, borderRadius: 12, backgroundColor: '#E6F0EC', justifyContent: 'center', alignItems: 'center' },
