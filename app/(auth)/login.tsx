@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { useAuth } from '../_layout';  
-import { API_URL } from '../config';   
+import { API_URL } from '../../config'; 
+ 
 import { 
   ActivityIndicator, 
   KeyboardAvoidingView, 

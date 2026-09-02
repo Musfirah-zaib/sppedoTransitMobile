@@ -8,10 +8,11 @@ import {
   StatusBar,
   ActivityIndicator
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // 🚀 Native Context Import
+import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { API_URL } from '../config'; 
+import { API_URL } from '../../config'; 
+
 
 interface BusStop {
   id: string;
